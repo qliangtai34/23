@@ -181,6 +181,7 @@ class AttendanceController extends Controller
 
     foreach ($breakStarts as $i => $start) {
         $end = $breakEnds[$i] ?? null;
+
         if ($start || $end) {
             \App\Models\AttendanceCorrectionBreak::create([
                 'attendance_correction_id' => $correction->id,
@@ -190,7 +191,8 @@ class AttendanceController extends Controller
         }
     }
 
-    return redirect()->route('attendance.detail', $attendance->date)
+    return redirect()
+        ->route('attendance.detail', $attendance->id)
         ->with('message', '修正申請を送信しました（承認待ち）');
 }
 
@@ -199,15 +201,32 @@ class AttendanceController extends Controller
 
 
 
+
 public function requestList(Request $request)
-    {
+{
+    // 管理者の場合
+    if (auth()->user()->is_admin) {
         $status = $request->query('status', 'pending');
 
-        $requests = AttendanceCorrection::with('user', 'attendance')
+        $corrections = AttendanceCorrection::with(['user', 'attendance'])
             ->where('status', $status)
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
-        return view('attendance.requests', compact('requests', 'status'));
+        return view('admin.corrections.index', compact('corrections', 'status'));
     }
+
+    // 一般ユーザーの場合
+    $status = $request->query('status', 'pending');
+
+    $requests = AttendanceCorrection::with('attendance')
+        ->where('user_id', auth()->id())
+        ->where('status', $status)
+        ->orderBy('created_at', 'desc')
+        ->paginate(20);
+
+    return view('attendance.requests', compact('requests', 'status'));
+}
+
+    
 }

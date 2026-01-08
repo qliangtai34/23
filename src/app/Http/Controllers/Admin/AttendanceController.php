@@ -18,8 +18,12 @@ class AttendanceController extends Controller
     // targetDate の勤怠のみ取得
     $attendances = Attendance::with(['user', 'breaks'])
     ->whereDate('date', $targetDate)
+    ->whereHas('user', function ($q) {
+        $q->where('is_admin', false);
+    })
     ->orderBy('user_id')
     ->get();
+
 
 
     // 前日/翌日

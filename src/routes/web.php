@@ -64,8 +64,8 @@ Route::middleware(['auth'])->group(function ()
     ->middleware('auth');
 
     // 申請一覧（承認待ち／承認済み）
-Route::get('/stamp_correction_request/list', [AttendanceController::class, 'requestList'])
-    ->name('attendance.requestList');
+Route::get('/stamp_correction_request/list', [\App\Http\Controllers\Admin\CorrectionController::class, 'index'])
+        ->name('admin.corrections.index');
 
     
 });
@@ -107,8 +107,7 @@ Route::middleware(['auth', 'admin'])->group(function() {
     
 
     // 修正申請一覧
-    Route::get('/admin/corrections', [\App\Http\Controllers\Admin\CorrectionController::class, 'index'])
-        ->name('admin.corrections.index');
+    
 
     // 修正申請詳細
     Route::get('/admin/corrections/{id}', [\App\Http\Controllers\Admin\CorrectionController::class, 'show'])

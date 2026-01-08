@@ -66,11 +66,17 @@
 
 
                 <td>
-                    <a href="{{ route('admin.corrections.show', $correction->id) }}"
-                       class="btn btn-sm btn-info">
-                        詳細
-                    </a>
-                </td>
+    @if (auth()->user()->isAdmin())
+        <a href="{{ route('admin.corrections.show', $correction->id) }}">
+            修正申請詳細
+        </a>
+    @else
+        <a href="{{ route('attendance.detail', $correction->attendance_id) }}">
+            勤怠詳細
+        </a>
+    @endif
+</td>
+
             </tr>
         @empty
             <tr>
